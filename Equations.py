@@ -1,5 +1,16 @@
 import numpy as np
 
+class Post_Process():
+    def __init__ (self,array):
+        self.array = array
+    
+    def adjustment(self):
+        for i in range(0,len(self.array)):
+            if self.array[i] == None:
+                self.array[i] = 'N/A'
+        return self.array
+
+
 class Constant_Volume():
     def __init__(self,T_1,T_2,P_1,P_2,q_12,c_v,s_1,s_2):
         self.T_1 = T_1
@@ -139,11 +150,15 @@ class Constant_Volume():
                 Constant_Volume.heat_transferred(self)
                 called =1
 
+        handling = [self.T_1,self.T_2,self.P_1,self.P_2,self.q_12,self.c_v,self.s_1,self.s_2]
+        post = Post_Process(handling)
+        handling = post.adjustment()
 
         if called == None:
-            return [[self.T_1,self.T_2,self.P_1,self.P_2,self.q_12,self.c_v,self.s_1,self.s_2],['Unable to compute values with variables']]
+            
+            return [handling,['Unable to compute values with variables']]
         else:
-            return [[self.T_1,self.T_2,self.P_1,self.P_2,self.q_12,self.c_v,self.s_1,self.s_2],'N/A']
+            return [handling,None]
           
 
 
@@ -340,11 +355,14 @@ class Constant_Pressure():
                 Constant_Pressure.entropy_change(self)
                 called =1
 
+        handling = [self.T_1,self.T_2,self.v_1,self.v_2,self.q_12,self.w_12,self.c_v,self.c_p,self.R,self.s_1,self.s_2,self.p]
+        post = Post_Process(handling)
+        handling = post.adjustment()
                 
         if called == None:
-            return [[self.T_1,self.T_2,self.v_1,self.v_2,self.q_12,self.w_12,self.c_v,self.c_p,self.R,self.s_1,self.s_2,self.p],['Unable to compute values with variables']]
+            return [handling,['Unable to compute values with variables']]
         else:
-            return [[self.T_1,self.T_2,self.v_1,self.v_2,self.q_12,self.w_12,self.c_v,self.c_p,self.R,self.s_1,self.s_2,self.p],'N/A']
+            return [handling,None]
 
 
 
@@ -500,11 +518,14 @@ class Constant_Temperature():
                 Constant_Temperature.work_done(self)
                 called =1
 
-                
+        handling = [self.T,self.v_1,self.v_2,self.P_1,self.P_2,self.q_12,self.w_12,self.c_v,self.c_p,self.R,self.s_1,self.s_2]
+        post = Post_Process(handling)
+        handling = post.adjustment()
+
         if called == None:
-            return [[self.T,self.v_1,self.v_2,self.P_1,self.P_2,self.q_12,self.w_12,self.c_v,self.c_p,self.R,self.s_1,self.s_2],['Unable to compute values with variables']]
+            return [handling,['Unable to compute values with variables']]
         else:
-            return [[self.T,self.v_1,self.v_2,self.P_1,self.P_2,self.q_12,self.w_12,self.c_v,self.c_p,self.R,self.s_1,self.s_2],'N/A']
+            return [handling,None]
 
 
 
@@ -750,13 +771,15 @@ class Adiabatic():
                 Adiabatic.energy_temp(self)
                 called =1
 
-
+        handling = [self.T_1,self.T_2,self.v_1,self.v_2,self.P_1,self.P_2,self.w_12,self.c_v,self.c_p,self.R,self.s_1,self.s_2,self.gamma]
+        post = Post_Process(handling)
+        handling = post.adjustment()
 
                 
         if called == None:
-            return [[self.T_1,self.T_2,self.v_1,self.v_2,self.P_1,self.P_2,self.w_12,self.c_v,self.c_p,self.R,self.s_1,self.s_2,self.gamma],['Unable to compute values with variables']]
+            return [handling,['Unable to compute values with variables']]
         else:
-            return [[self.T_1,self.T_2,self.v_1,self.v_2,self.P_1,self.P_2,self.w_12,self.c_v,self.c_p,self.R,self.s_1,self.s_2,self.gamma],'N/A']
+            return [handling,None]
 
 
 class Polytropic():
@@ -1087,12 +1110,14 @@ class Polytropic():
 
 
 
-
+        handling = [self.P_1,self.P_2,self.v_1,self.v_2,self.T_1,self.T_2,self.w_12,self.q_12,self.c_v,self.R,self.n]
+        post = Post_Process(handling)
+        handling = post.adjustment()
                 
         if called == None:
-            return [[self.P_1,self.P_2,self.v_1,self.v_2,self.T_1,self.T_2,self.w_12,self.q_12,self.c_v,self.R,self.n],['Unable to compute values with variables']]
+            return [handling,['Unable to compute values with variables']]
         else:
-            return [[self.P_1,self.P_2,self.v_1,self.v_2,self.T_1,self.T_2,self.w_12,self.q_12,self.c_v,self.R,self.n],'N/A']
+            return [handling,None]
 
 class Flow_Processes():
     def __init__(self,q_12,w_12,h_2,h_1,C_1,C_2,z_1,z_2):
@@ -1151,10 +1176,14 @@ class Flow_Processes():
                 Flow_Processes.all_variables(self)
                 called = 1
 
+        handling = [self.q_12,self.w_12,self.h_2,self.h_1,self.C_1,self.C_2,self.z_1,self.z_2]
+        post = Post_Process(handling)
+        handling = post.adjustment()        
+
         if called == None:
-            return [[self.q_12,self.w_12,self.h_2,self.h_1,self.C_1,self.C_2,self.z_1,self.z_2],['Unable to compute values with variables']]
+            return [handling,['Unable to compute values with variables']]
         else:
-            return [[self.q_12,self.w_12,self.h_2,self.h_1,self.C_1,self.C_2,self.z_1,self.z_2],'N/A']
+            return [handling,None]
 
 
 class Boilers_Condensors_Heaters_Coolers():
@@ -1223,10 +1252,16 @@ class Boilers_Condensors_Heaters_Coolers():
                 Boilers_Condensors_Heaters_Coolers.entropy(self)
                 called = 1
 
+        handling = [self.q_12,self.T_1,self.T_2,self.h_1,self.h_2,self.s_1,self.s_2,self.c_p]
+        post = Post_Process(handling)
+        handling = post.adjustment()        
+
+
+
         if called == None:
-            return [[self.q_12,self.T_1,self.T_2,self.h_1,self.h_2,self.s_1,self.s_2,self.c_p],['Unable to compute values with variables']]
+            return [handling,['Unable to compute values with variables']]
         else:
-            return [[self.q_12,self.T_1,self.T_2,self.h_1,self.h_2,self.s_1,self.s_2,self.c_p],'N/A']
+            return [handling,None]
 
 
 class Nozzles_Diffusers():
@@ -1280,6 +1315,8 @@ class Nozzles_Diffusers():
             return self.T_1
 
         #def enthalpy(self):
+        #    if self.h_2 == None:
+        #        self.h_2 = 
 
 
 
@@ -1290,8 +1327,10 @@ if __name__ == "__main__":
     constVol = Constant_Volume(123,23,43,None,None,None,None,None)
     a = constVol.equation_finder()
     print(a)
-    constPres = Constant_Pressure(50,None,300,200,5,None,None,4000,None,400,300,30)
+    constPres = Constant_Pressure(50,None,None,None,None,None,None,4000,None,None,None,30)
     b = constPres.equation_finder()
+    post = Post_Process(b[0])
+    b[0] = post.adjustment()
     print(b)
     #T_1,T_2,v_1,v_2,q_12,w_12,c_v,c_p,R,s_1,s_2,p
     constTemp = Constant_Temperature(1,2,3,4,5,6,7,8,9,10,11,12)
