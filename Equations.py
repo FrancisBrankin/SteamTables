@@ -1127,7 +1127,7 @@ class Polytropic():
                 called = 1
 
         handling = [self.P_1, self.P_2, self.v_1, self.v_2, self.T_1,
-                    self.T_2, self.w_12, self.q_12, self.c_v, self.R, self.n]
+                    self.T_2, self.s_1, self.s_2, self.w_12, self.q_12, self.c_v, self.R, self.n]
         post = Post_Process(handling)
         handling = post.adjustment()
 
@@ -1347,7 +1347,7 @@ class Nozzles_Diffusers():
                return self.h_2
 
             elif self.h_1 == None:
-                    self.h_1 = (self.h_2 - self.mu*self.h_2i - self.h_2)
+                    self.h_1 = (self.h_2 - self.mu*self.h_2i)/(1-self.mu)
                 return self.h_1
 
             elif self.mu == None: 
