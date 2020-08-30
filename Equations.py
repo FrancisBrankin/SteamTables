@@ -1,14 +1,20 @@
 import numpy as np
-
+import math
 
 class Post_Process():
     def __init__(self, array):
         self.array = array
-
+        self.sigfig = 6
     def adjustment(self):
         for i in range(0, len(self.array)):
-            if self.array[i] == None:
+            try: 0 + self.array[i]
+            except TypeError: canadd=False
+            else: canadd=True
+
+            if canadd != True:
                 self.array[i] = 'N/A'
+            else:
+                self.array[i] = round(self.array[i],self.sigfig - int(math.floor(math.log10(abs(self.array[i])))) - 1)
         return self.array
 
 
@@ -1363,7 +1369,7 @@ if __name__ == "__main__":
     constVol = Constant_Volume(123,23,43,None,None,None,None,None)
     a = constVol.equation_finder()
     print(a)
-    constPres = Constant_Pressure(50,None,None,None,None,None,None,4000,None,None,None,30)
+    constPres = Constant_Pressure(50,None,None,None,None,None,None,41111111111111111,None,None,None,30)
     b = constPres.equation_finder()
     post = Post_Process(b[0])
     b[0] = post.adjustment()
