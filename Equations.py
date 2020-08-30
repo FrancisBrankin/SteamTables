@@ -782,6 +782,8 @@ class Polytropic():
         self.v_2 = v_2
         self.T_1 = T_1
         self.T_2 = T_2
+        self.s_1 = s_1
+        self.s_2 = s_2
         self.w_12 = w_12
         self.q_12 = q_12
         self.c_v = c_v
@@ -1339,14 +1341,20 @@ class Nozzles_Diffusers():
             self.T_1 = - (self.h_2 - self.h_1)/self.c_p + self.T_2
             return self.T_1
 
-        # def enthalpy(self):
-        #    if self.h_2 == None:
-        #        self.h_2 = self.h_1 + self.mu*(self.h_2i - self.h_2)
-        #        return self.h_2
+        def enthalpy(self):
+           if self.h_2 == None:
+               self.h_2 = self.h_1 + self.mu*(self.h_2i - self.h_1)
+               return self.h_2
 
-        #     elif self.h_1 == None:
-        #             self.h_2 = self.h_1 + self.mu*(self.h_2i - self.h_2)
-        #         return self.h_2
+            elif self.h_1 == None:
+                    self.h_1 = (self.h_2 - self.mu*self.h_2i - self.h_2)
+                return self.h_1
+
+            elif self.mu == None: 
+                self.mu = (self.h_2 - self.h_1)/(self.h_2i - self.h_2)
+                return self.mu
+
+            elif self.h_2i
 
 if __name__ == "__main__":
 
