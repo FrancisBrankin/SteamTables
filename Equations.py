@@ -775,7 +775,7 @@ class Adiabatic():
 
 
 class Polytropic():
-    def __init__(self, P_1, P_2, v_1, v_2, T_1, T_2, w_12, q_12, c_v, R, n):
+    def __init__(self, P_1, P_2, v_1, v_2, T_1, T_2, s_1, s_2, w_12, q_12, c_v, R, n):
         self.P_1 = P_1
         self.P_2 = P_2
         self.v_1 = v_1
@@ -1341,8 +1341,12 @@ class Nozzles_Diffusers():
 
         # def enthalpy(self):
         #    if self.h_2 == None:
-        #        self.h_2 =
+        #        self.h_2 = self.h_1 + self.mu*(self.h_2i - self.h_2)
+        #        return self.h_2
 
+        #     elif self.h_1 == None:
+        #             self.h_2 = self.h_1 + self.mu*(self.h_2i - self.h_2)
+        #         return self.h_2
 
 if __name__ == "__main__":
 
@@ -1364,20 +1368,20 @@ if __name__ == "__main__":
     # def __init__(self,T,v_1,v_2,P_1,P_2,q_12,w_12,c_v,c_p,R,s_1,s_2):
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    constVol = Constant_Volume(123,23,43,None,None,None,None,None)
-    a = constVol.equation_finder()
-    print(a)
-    constPres = Constant_Pressure(50,None,None,None,None,None,None,41111111111111111,None,None,None,30)
-    b = constPres.equation_finder()
-    post = Post_Process(b[0])
-    b[0] = post.adjustment()
-    print(b)
-    #T_1,T_2,v_1,v_2,q_12,w_12,c_v,c_p,R,s_1,s_2,p
-    constTemp = Constant_Temperature(1,2,3,4,5,6,7,8,9,10,11,12)
-    b = constTemp.equation_finder()
-    print(b)
+#     constVol = Constant_Volume(123,23,43,None,None,None,None,None)
+#     a = constVol.equation_finder()
+#     print(a)
+#     constPres = Constant_Pressure(50,None,None,None,None,None,None,41111111111111111,None,None,None,30)
+#     b = constPres.equation_finder()
+#     post = Post_Process(b[0])
+#     b[0] = post.adjustment()
+#     print(b)
+#     #T_1,T_2,v_1,v_2,q_12,w_12,c_v,c_p,R,s_1,s_2,p
+#     constTemp = Constant_Temperature(1,2,3,4,5,6,7,8,9,10,11,12)
+#     b = constTemp.equation_finder()
+#     print(b)
 
-    #class Constant_Temperature():
-    #def __init__(self,T,v_1,v_2,P_1,P_2,q_12,w_12,c_v,c_p,R,s_1,s_2):
+#     #class Constant_Temperature():
+#     #def __init__(self,T,v_1,v_2,P_1,P_2,q_12,w_12,c_v,c_p,R,s_1,s_2):
