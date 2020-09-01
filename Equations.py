@@ -86,32 +86,39 @@ class Constant_Volume():
 
         # if null < 1:
         #    return [[self.q_12, self.c_v, self.T_1, self.T_2, self.s_1, self.s_2], 'Too many unknown values']
-
+        #print([self.T_1, self.T_2, self.P_1, self.P_2,
+        #            self.q_12, self.c_v, self.s_1, self.s_2])
         if self.s_1 == None:
             self.s_1 = self.s_2 - self.c_v*np.log(self.T_2/self.T_1)
+            #print(self.s_1)
             # return [[self.T_1,self.T_2,self.P_1,self.P_2,self.q_12,self.c_v,self.s_1,self.s_2], None]
 
         elif self.s_2 == None:
             self.s_2 = self.s_1 + self.c_v*np.log(self.T_2/self.T_1)
+            #print(self.s_2)
             # return [[self.T_1,self.T_2,self.P_1,self.P_2,self.q_12,self.c_v,self.s_1,self.s_2], None]
 
         elif self.c_v == None:
             self.c_v = (self.s_2 - self.s_1)/(np.log(self.T_2/self.T_1))
+            #print(self.c_v)
             # return [[self.T_1,self.T_2,self.P_1,self.P_2,self.q_12,self.c_v,self.s_1,self.s_2], None]
 
         elif self.T_2 == None:
             self.T_2 = self.T_1*np.exp((self.s_2-self.s_1)/self.c_v)
+            #print(self.T_2)
             # return [[self.T_1,self.T_2,self.P_1,self.P_2,self.q_12,self.c_v,self.s_1,self.s_2], None]
 
         elif self.T_1 == None:
             self.T_1 = self.T_2/np.exp((self.s_2-self.s_1)/self.c_v)
+            #print(self.T_1)
             # return [[self.T_1,self.T_2,self.P_1,self.P_2,self.q_12,self.c_v,self.s_1,self.s_2], None]
 
     def equation_finder(self):
         called = None
         for i in range(0, 3):
-            checka = [self.q_12, self.c_v, self.T_1,
+            checka = [self.c_v, self.T_1,
                       self.T_2, self.s_1, self.s_2]
+            #print("check: " + str(checka))
             null_entropy = 0
             for a in checka:
                 if a == None:
@@ -198,7 +205,7 @@ class Constant_Pressure():
             return self.v_2
 
         elif self.v_1 == None:
-            self.v_1 = self.w_12/self.p - self.v_2
+            self.v_1 = -self.w_12/self.p + self.v_2
             return self.v_1
 
     def work_done_temp(self):
@@ -215,7 +222,7 @@ class Constant_Pressure():
             return self.v_2
 
         elif self.T_1 == None:
-            self.T_1 = self.w_12/self.R - self.T_2
+            self.T_1 = - self.w_12/self.R + self.T_2
             return self.T_1
 
     def heat_transfer_CvR(self):
@@ -248,8 +255,8 @@ class Constant_Pressure():
             return self.q_12
 
         elif self.c_p == None:
-            self.c_v = self.q_12/(self.T_2 - self.T_1)
-            return self.c_v
+            self.c_p = self.q_12/(self.T_2 - self.T_1)
+            return self.c_p
 
         elif self.T_1 == None:
             self.T_1 = self.T_2 - self.q_12/(self.c_p)
@@ -1657,68 +1664,68 @@ class Throttles():
  
 #Constant Volume Testing
 #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-if __name__ == "__main__":
-    inputs = 8
-    eqn_values = 4
-    for a in range(0,eqn_values):
-        values = [4,2,2,1]
-        #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-        positions = [1,0,3,2]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
+# if __name__ == "__main__":
+#     inputs = 8
+#     eqn_values = 5
+#     for a in range(0,eqn_values):
+#         values = [4,8,2,6,0.454822556]
+#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
+#         positions = [5,1,0,7,6]
+#         values.pop(a)
+#         positions.pop(a)
+#         #print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
 
-            else:
-                variables.append(None)
+#             #else:
+#                 #variables.append(None)
 
-        #print(variables)
+#         #print(variables)
 
-        test = Constant_Volume(variables[0],variables[1],variables[2],
-                variables[3],variables[4],variables[5],variables[6],variables[7])
-        print(test.equation_finder()[0])
+#         test = Constant_Volume(variables[0],variables[1],variables[2],
+#                 variables[3],variables[4],variables[5],variables[6],variables[7])
+#         print(test.equation_finder()[0])
 
     #def __init__(self, T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2):
 
-#Constant Pressure Testing
-#     #T_1, T_2, v_1, v_2, q_12, w_12, c_v, c_p, R, s_1, s_2, p
-if __name__ == "__main__":
-    inputs = 12
-    eqn_values = 4
-    for a in range(0,eqn_values):
-        values = [4,2,2,1]
-        #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-        positions = [1,0,3,2]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
+# #Constant Pressure Testing
+# #     #T_1, T_2, v_1, v_2, q_12, w_12, c_v, c_p, R, s_1, s_2, p
+# if __name__ == "__main__":
+#     inputs = 12
+#     eqn_values = 5
+#     for a in range(0,eqn_values):
+#         values = [4,8,2,6,0.4548225555]
+#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
+#         positions = [7,1,0,10,9]
+#         values.pop(a)
+#         positions.pop(a)
+#         print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
 
-            else:
-                variables.append(None)
+#             else:
+#                 variables.append(None)
 
-        #print(variables)
+#         #print(variables)
 
 
-        test = Constant_Pressure(variables[0],variables[1],variables[2],
-            variables[3],variables[4],variables[5],variables[6],variables[7]
-            variables[8],variables[9],variables[10],variables[11])
-        print(test.equation_finder()[0])
+#         test = Constant_Pressure(variables[0],variables[1],variables[2],
+#             variables[3],variables[4],variables[5],variables[6],variables[7],
+#             variables[8],variables[9],variables[10],variables[11])
+#         print(test.equation_finder()[0])
 
-#Constant Temperature Testing
-# T, v_1, v_2, P_1, P_2, q_12, w_12, c_v, c_p, R, s_1, s_2
+# #Constant Temperature Testing
+# # T, v_1, v_2, P_1, P_2, q_12, w_12, c_v, c_p, R, s_1, s_2
 if __name__ == "__main__":
     inputs = 12
     eqn_values = 4
@@ -1748,217 +1755,217 @@ if __name__ == "__main__":
             variables[8],variables[9],variables[10],variables[11])
         print(test.equation_finder()[0])
 
-#Adiabatic Testing
-#T_1, T_2, v_1, v_2, P_1, P_2, w_12, c_v, c_p, R, s_1, s_2, u_1, u_2, gamma
-if __name__ == "__main__":
-    inputs = 15
-    eqn_values = 4
-    for a in range(0,eqn_values):
-        values = [4,2,2,1]
-        #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-        positions = [1,0,3,2]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
+# #Adiabatic Testing
+# #T_1, T_2, v_1, v_2, P_1, P_2, w_12, c_v, c_p, R, s_1, s_2, u_1, u_2, gamma
+# if __name__ == "__main__":
+#     inputs = 15
+#     eqn_values = 4
+#     for a in range(0,eqn_values):
+#         values = [4,2,2,1]
+#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
+#         positions = [1,0,3,2]
+#         values.pop(a)
+#         positions.pop(a)
+#         print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
 
-            else:
-                variables.append(None)
+#             else:
+#                 variables.append(None)
 
-        #print(variables)
-
-
-        test = Adiabatic(variables[0],variables[1],variables[2],
-            variables[3],variables[4],variables[5],variables[6],variables[7]
-            variables[8],variables[9],variables[10],variables[11],variables[12]
-            variables[13],variables[14])
-        print(test.equation_finder()[0])
-
-#Polytropic Testing
-#P_1, P_2, v_1, v_2, T_1, T_2, s_1, s_2, w_12, q_12, c_v, R, n
-if __name__ == "__main__":
-    inputs = 13
-    eqn_values = 4
-    for a in range(0,eqn_values):
-        values = [4,2,2,1]
-        #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-        positions = [1,0,3,2]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
-
-            else:
-                variables.append(None)
-
-        #print(variables)
+#         #print(variables)
 
 
-        test = Polytropic(variables[0],variables[1],variables[2],
-            variables[3],variables[4],variables[5],variables[6],variables[7]
-            variables[8],variables[9],variables[10],variables[11],variables[12])
-        print(test.equation_finder()[0])
+#         test = Adiabatic(variables[0],variables[1],variables[2],
+#             variables[3],variables[4],variables[5],variables[6],variables[7]
+#             variables[8],variables[9],variables[10],variables[11],variables[12]
+#             variables[13],variables[14])
+#         print(test.equation_finder()[0])
 
-#Flow Processes Testing
-#q_12, w_12, h_2, h_1, C_1, C_2, z_1, z_2
-if __name__ == "__main__":
-    inputs = 8
-    eqn_values = 4
-    for a in range(0,eqn_values):
-        values = [4,2,2,1]
-        #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-        positions = [1,0,3,2]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
+# #Polytropic Testing
+# #P_1, P_2, v_1, v_2, T_1, T_2, s_1, s_2, w_12, q_12, c_v, R, n
+# if __name__ == "__main__":
+#     inputs = 13
+#     eqn_values = 4
+#     for a in range(0,eqn_values):
+#         values = [4,2,2,1]
+#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
+#         positions = [1,0,3,2]
+#         values.pop(a)
+#         positions.pop(a)
+#         print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
 
-            else:
-                variables.append(None)
+#             else:
+#                 variables.append(None)
 
-        #print(variables)
-
-
-        test = Flow_Processes(variables[0],variables[1],variables[2],
-            variables[3],variables[4],variables[5],variables[6],variables[7])
-        print(test.equation_finder()[0])
-
-#Boilers Condesnors Heaters Coolers Testing
-#q_12, T_1, T_2, h_1, h_2, s_1, s_2, c_p
-if __name__ == "__main__":
-    inputs = 8
-    eqn_values = 4
-    for a in range(0,eqn_values):
-        values = [4,2,2,1]
-        #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-        positions = [1,0,3,2]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
-
-            else:
-                variables.append(None)
-
-        #print(variables)
+#         #print(variables)
 
 
-        test = Boilers_Condensors_Heaters_Coolers(variables[0],variables[1],variables[2],
-            variables[3],variables[4],variables[5],variables[6],variables[7])
-        print(test.equation_finder()[0])
+#         test = Polytropic(variables[0],variables[1],variables[2],
+#             variables[3],variables[4],variables[5],variables[6],variables[7]
+#             variables[8],variables[9],variables[10],variables[11],variables[12])
+#         print(test.equation_finder()[0])
 
-#Nozzles Diffusers Testing
-#C_1, C_2, h_1, h_2, h_2i, T_1, T_2, T_2i, s_1, s_2, c_p, mu
-if __name__ == "__main__":
-    inputs = 12
-    eqn_values = 4
-    for a in range(0,eqn_values):
-        values = [4,2,2,1]
-        #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-        positions = [1,0,3,2]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
+# #Flow Processes Testing
+# #q_12, w_12, h_2, h_1, C_1, C_2, z_1, z_2
+# if __name__ == "__main__":
+#     inputs = 8
+#     eqn_values = 4
+#     for a in range(0,eqn_values):
+#         values = [4,2,2,1]
+#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
+#         positions = [1,0,3,2]
+#         values.pop(a)
+#         positions.pop(a)
+#         print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
 
-            else:
-                variables.append(None)
+#             else:
+#                 variables.append(None)
 
-        #print(variables)
-
-
-    test = Nozzles_Diffusers(variables[0],variables[1],variables[2],
-            variables[3],variables[4],variables[5],variables[6],variables[7]
-            variables[8],variables[9],variables[10],variables[11])
-    print(test.equation_finder()[0])
-
-#Turbine Compressors Testing
-#w_12,h_1,h_2,h_2i,T_1,T_2,T_2i,s_1,s_2,c_p
-if __name__ == "__main__":
-    inputs = 10
-    eqn_values = 4
-    for a in range(0,eqn_values):
-        values = [4,2,2,1]
-        #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-        positions = [1,0,3,2]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
-
-            else:
-                variables.append(None)
-
-        #print(variables)
+#         #print(variables)
 
 
-    test = Turbine_Compressors(variables[0],variables[1],variables[2],
-            variables[3],variables[4],variables[5],variables[6],variables[7]
-            variables[8],variables[9])
-    print(test.equation_finder()[0])
+#         test = Flow_Processes(variables[0],variables[1],variables[2],
+#             variables[3],variables[4],variables[5],variables[6],variables[7])
+#         print(test.equation_finder()[0])
 
-#Throttles Testing
-#h_1,h_2
-if __name__ == "__main__":
-    inputs = 2
-    eqn_values = 4
-    for a in range(0,eqn_values):
-        values = [4,2,2,1]
-        #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-        positions = [1,0,3,2]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
+# #Boilers Condesnors Heaters Coolers Testing
+# #q_12, T_1, T_2, h_1, h_2, s_1, s_2, c_p
+# if __name__ == "__main__":
+#     inputs = 8
+#     eqn_values = 4
+#     for a in range(0,eqn_values):
+#         values = [4,2,2,1]
+#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
+#         positions = [1,0,3,2]
+#         values.pop(a)
+#         positions.pop(a)
+#         print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
 
-            else:
-                variables.append(None)
+#             else:
+#                 variables.append(None)
 
-        #print(variables)
+#         #print(variables)
 
 
-    test = Throttles(variables[0],variables[1])
-    print(test.equation_finder()[0])
+#         test = Boilers_Condensors_Heaters_Coolers(variables[0],variables[1],variables[2],
+#             variables[3],variables[4],variables[5],variables[6],variables[7])
+#         print(test.equation_finder()[0])
+
+# #Nozzles Diffusers Testing
+# #C_1, C_2, h_1, h_2, h_2i, T_1, T_2, T_2i, s_1, s_2, c_p, mu
+# if __name__ == "__main__":
+#     inputs = 12
+#     eqn_values = 4
+#     for a in range(0,eqn_values):
+#         values = [4,2,2,1]
+#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
+#         positions = [1,0,3,2]
+#         values.pop(a)
+#         positions.pop(a)
+#         print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
+
+#             else:
+#                 variables.append(None)
+
+#         #print(variables)
+
+
+#     test = Nozzles_Diffusers(variables[0],variables[1],variables[2],
+#             variables[3],variables[4],variables[5],variables[6],variables[7]
+#             variables[8],variables[9],variables[10],variables[11])
+#     print(test.equation_finder()[0])
+
+# #Turbine Compressors Testing
+# #w_12,h_1,h_2,h_2i,T_1,T_2,T_2i,s_1,s_2,c_p
+# if __name__ == "__main__":
+#     inputs = 10
+#     eqn_values = 4
+#     for a in range(0,eqn_values):
+#         values = [4,2,2,1]
+#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
+#         positions = [1,0,3,2]
+#         values.pop(a)
+#         positions.pop(a)
+#         print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
+
+#             else:
+#                 variables.append(None)
+
+#         #print(variables)
+
+
+#     test = Turbine_Compressors(variables[0],variables[1],variables[2],
+#             variables[3],variables[4],variables[5],variables[6],variables[7]
+#             variables[8],variables[9])
+#     print(test.equation_finder()[0])
+
+# #Throttles Testing
+# #h_1,h_2
+# if __name__ == "__main__":
+#     inputs = 2
+#     eqn_values = 4
+#     for a in range(0,eqn_values):
+#         values = [4,2,2,1]
+#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
+#         positions = [1,0,3,2]
+#         values.pop(a)
+#         positions.pop(a)
+#         print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
+
+#             else:
+#                 variables.append(None)
+
+#         #print(variables)
+
+
+#     test = Throttles(variables[0],variables[1])
+#     print(test.equation_finder()[0])
 
