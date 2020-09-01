@@ -1731,7 +1731,7 @@ if __name__ == "__main__":
     eqn_values = 4
     for a in range(0,eqn_values):
         values = [4,2,2,1]
-        #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
+        #T, v_1, v_2, P_1, P_2, q_12, w_12, c_v, c_p, R, s_1, s_2
         positions = [1,0,3,2]
         values.pop(a)
         positions.pop(a)
@@ -1751,7 +1751,7 @@ if __name__ == "__main__":
 
 
         test = Constant_Temperature(variables[0],variables[1],variables[2],
-            variables[3],variables[4],variables[5],variables[6],variables[7]
+            variables[3],variables[4],variables[5],variables[6],variables[7],
             variables[8],variables[9],variables[10],variables[11])
         print(test.equation_finder()[0])
 
@@ -1782,7 +1782,7 @@ if __name__ == "__main__":
 
 
 #         test = Adiabatic(variables[0],variables[1],variables[2],
-#             variables[3],variables[4],variables[5],variables[6],variables[7]
+#             variables[3],variables[4],variables[5],variables[6],variables[7],
 #             variables[8],variables[9],variables[10],variables[11],variables[12]
 #             variables[13],variables[14])
 #         print(test.equation_finder()[0])
@@ -1814,7 +1814,7 @@ if __name__ == "__main__":
 
 
 #         test = Polytropic(variables[0],variables[1],variables[2],
-#             variables[3],variables[4],variables[5],variables[6],variables[7]
+#             variables[3],variables[4],variables[5],variables[6],variables[7],
 #             variables[8],variables[9],variables[10],variables[11],variables[12])
 #         print(test.equation_finder()[0])
 
@@ -1905,7 +1905,7 @@ if __name__ == "__main__":
 
 
 #     test = Nozzles_Diffusers(variables[0],variables[1],variables[2],
-#             variables[3],variables[4],variables[5],variables[6],variables[7]
+#             variables[3],variables[4],variables[5],variables[6],variables[7],
 #             variables[8],variables[9],variables[10],variables[11])
 #     print(test.equation_finder()[0])
 
@@ -1936,7 +1936,7 @@ if __name__ == "__main__":
 
 
 #     test = Turbine_Compressors(variables[0],variables[1],variables[2],
-#             variables[3],variables[4],variables[5],variables[6],variables[7]
+#             variables[3],variables[4],variables[5],variables[6],variables[7],
 #             variables[8],variables[9])
 #     print(test.equation_finder()[0])
 
