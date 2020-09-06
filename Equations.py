@@ -409,6 +409,11 @@ class Constant_Temperature():
             self.v_1 = self.v_2/np.exp((self.s_2-self.s_1)/self.R)
             return self.v_1
 
+        elif self.R == None:
+            self.R = (self.s_2 - self.s_1)/(np.log(self.v_2/self.v_1))
+            return self.R
+
+
     def heat_transferred_entropy(self):
         if self.q_12 == None:
             self.q_12 = self.T*(self.s_2-self.s_1)
@@ -439,11 +444,11 @@ class Constant_Temperature():
             self.R = self.q_12/(self.T*np.log(self.v_2/self.v_1))
 
         elif self.v_2 == None:
-            self.v_2 = self.v_1*np.exp((self.q_12)/self.R*self.T)
+            self.v_2 = self.v_1*np.exp((self.q_12)/(self.R*self.T))
             return self.v_2
 
         elif self.v_1 == None:
-            self.v_1 = self.v_2/np.exp((self.q_12)/self.R*self.T)
+            self.v_1 = self.v_2/np.exp((self.q_12)/(self.R*self.T))
             return self.v_1
 
     def work_done(self):
@@ -467,7 +472,7 @@ class Constant_Temperature():
                 Constant_Temperature.pressure_and_volume(self)
                 called = 1
 
-            checkb = [self.s_1, self.s_2, self.v_1, self.v_2]
+            checkb = [self.s_1, self.s_2, self.v_1, self.v_2, self.R]
             null_entropy = 0
             for a in checkb:
                 if a == None:
@@ -555,13 +560,12 @@ class Adiabatic():
             return self.P_1
 
         elif self.v_1 == None:
-            self.v_1 = self.v_2 * (self.P_1/self.P_2) ** self.gamma
+            self.v_1 = self.v_2 * ((self.P_2/self.P_1) ** (1/self.gamma))
             return self.v_1
 
         elif self.v_2 == None:
-            self.v_2 = self.v_1 / ((self.P_1/self.P_2) **
-                                   ((self.gamma-1)/self.gamma))
-            self.v_2
+            self.v_2 = self.v_1 / ((self.P_2/self.P_1) ** (1/self.gamma))
+            return self.v_2
 
         elif self.gamma == None:
             self.gamma = np.log(self.P_2/self.P_1)/(np.log(self.v_1/self.v_2))
@@ -570,22 +574,22 @@ class Adiabatic():
     def gas_law_temp_pres(self):
         if self.T_2 == None:
             self.T_2 = self.T_1 * \
-                (self.P_1/self.P_2) ** ((self.gamma-1)/self.gamma)
+                (self.P_2/self.P_1) ** ((self.gamma-1)/self.gamma)
             return self.T_2
 
         elif self.T_1 == None:
-            self.T_1 = self.T_2 / ((self.P_1/self.P_2) **
+            self.T_1 = self.T_2 / ((self.P_2/self.P_1) **
                                    ((self.gamma-1)/self.gamma))
             return self.T_1
 
         elif self.P_1 == None:
             self.P_1 = self.P_2 * \
-                (self.T_1/self.T_2) ** ((self.gamma-1)/self.gamma)
+                (self.T_1/self.T_2) ** ((self.gamma)/(self.gamma-1))
             return self.P_1
 
         elif self.P_2 == None:
             self.P_2 = self.P_1 / ((self.T_1/self.T_2) **
-                                   ((self.gamma-1)/self.gamma))
+                                   ((self.gamma)/(self.gamma-1)))
             return self.P_2
 
         elif self.gamma == None:
@@ -602,17 +606,16 @@ class Adiabatic():
             self.T_1 = self.T_2 / ((self.v_1/self.v_2) ** (self.gamma-1))
             return self.T_1
 
-        elif self.P_1 == None:
-            self.v_1 = self.v_2 * (self.T_1/self.T_2) ** (self.gamma-1)
+        elif self.v_1 == None:
+            self.v_1 = self.v_2 * ((self.T_2/self.T_1) ** (1/(self.gamma-1)))
             return self.v_1
 
         elif self.v_2 == None:
-            self.v_2 = self.v_1 / ((self.T_1/self.T_2) ** (self.gamma-1))
+            self.v_2 = self.v_1 / ((self.T_2/self.T_1) ** (1/(self.gamma-1)))
             return self.v_2
 
         elif self.gamma == None:
-            self.gamma = (np.log(self.T_2/self.T_1) +
-                          np.log(self.v_1/self.v_2)/np.log(self.v_1/self.v_2))
+            self.gamma = 1 + np.log(self.T_2/self.T_1)/np.log(self.v_1/self.v_2)
             return self.gamma
 
     def gamma_cp_cv(self):
@@ -638,7 +641,7 @@ class Adiabatic():
             return self.w_12
 
         elif self.u_1 == None:
-            self.u_1 = self.w_12 - self.u_2
+            self.u_1 = self.w_12 + self.u_2
             return self.u_2
 
     def work_temp(self):
@@ -762,7 +765,8 @@ class Adiabatic():
                 called = 1
 
         handling = [self.T_1, self.T_2, self.v_1, self.v_2, self.P_1, self.P_2,
-                    self.w_12, self.c_v, self.c_p, self.R, self.s_1, self.s_2, self.gamma]
+                    self.w_12, self.c_v, self.c_p, self.R, self.s_1, self.s_2,
+                    self.u_1, self.u_2, self.gamma]
         post = Post_Process(handling)
         handling = post.adjustment()
 
@@ -798,12 +802,12 @@ class Polytropic():
             return self.P_1
 
         elif self.v_1 == None:
-            self.v_1 = self.v_2 * (self.P_1/self.P_2) ** self.n
+            self.v_1 = self.v_2 * ((self.P_2/self.P_1) ** (1/self.n))
             return self.v_1
 
         elif self.v_2 == None:
-            self.v_2 = self.v_1 / ((self.P_1/self.P_2) ** ((self.n-1)/self.n))
-            self.v_2
+            self.v_2 = self.v_1 / ((self.P_2/self.P_1) ** (1/self.n))
+            return self.v_2
 
         elif self.n == None:
             self.n = np.log(self.P_2/self.P_1)/(np.log(self.v_1/self.v_2))
@@ -811,23 +815,27 @@ class Polytropic():
 
     def gas_law_temp_pres(self):
         if self.T_2 == None:
-            self.T_2 = self.T_1 * (self.P_1/self.P_2) ** ((self.n-1)/self.n)
+            self.T_2 = self.T_1 * \
+                (self.P_2/self.P_1) ** ((self.n-1)/self.n)
             return self.T_2
 
         elif self.T_1 == None:
-            self.T_1 = self.T_2 / ((self.P_1/self.P_2) ** ((self.n-1)/self.n))
+            self.T_1 = self.T_2 / ((self.P_2/self.P_1) **
+                                   ((self.n-1)/self.n))
             return self.T_1
 
         elif self.P_1 == None:
-            self.P_1 = self.P_2 * (self.T_1/self.T_2) ** ((self.n-1)/self.n)
+            self.P_1 = self.P_2 * \
+                (self.T_1/self.T_2) ** ((self.n)/(self.n-1))
             return self.P_1
 
         elif self.P_2 == None:
-            self.P_2 = self.P_1 / ((self.T_1/self.T_2) ** ((self.n-1)/self.n))
+            self.P_2 = self.P_1 / ((self.T_1/self.T_2) **
+                                   ((self.n)/(self.n-1)))
             return self.P_2
 
         elif self.n == None:
-            self.gamma = np.log(
+            self.n = np.log(
                 self.P_2/self.P_1)/(np.log(self.P_2/self.P_1)-np.log(self.T_2/self.T_1))
             return self.n
 
@@ -840,17 +848,16 @@ class Polytropic():
             self.T_1 = self.T_2 / ((self.v_1/self.v_2) ** (self.n-1))
             return self.T_1
 
-        elif self.P_1 == None:
-            self.v_1 = self.v_2 * (self.T_1/self.T_2) ** (self.n-1)
+        elif self.v_1 == None:
+            self.v_1 = self.v_2 * ((self.T_2/self.T_1) ** (1/(self.n-1)))
             return self.v_1
 
         elif self.v_2 == None:
-            self.v_2 = self.v_1 / ((self.T_1/self.T_2) ** (self.n-1))
+            self.v_2 = self.v_1 / ((self.T_2/self.T_1) ** (1/(self.n-1)))
             return self.v_2
 
         elif self.n == None:
-            self.n = (np.log(self.T_2/self.T_1) +
-                      np.log(self.v_1/self.v_2)/np.log(self.v_1/self.v_2))
+            self.n = 1 + np.log(self.T_2/self.T_1)/np.log(self.v_1/self.v_2)
             return self.n
 
     def work_pres_vol(self):
@@ -863,7 +870,7 @@ class Polytropic():
             return self.P_2
 
         elif self.P_1 == None:
-            self.P_1 = (self.w_12*(1-self.n) - self.P_2*self.v_2)/self.v_1
+            self.P_1 = (-self.w_12*(1-self.n) + self.P_2*self.v_2)/self.v_1
             return self.P_1
 
         elif self.v_2 == None:
@@ -937,7 +944,7 @@ class Polytropic():
 
     def heat_transferred(self):
         if self.q_12 == None:
-            self.q_12 = (self.c_v + self.R/(1-self.n))(self.T_2-self.T_1)
+            self.q_12 = (self.c_v + self.R/(1-self.n))*(self.T_2-self.T_1)
             return self.q_12
 
         elif self.c_v == None:
@@ -945,7 +952,7 @@ class Polytropic():
             return self.c_v
 
         elif self.R == None:
-            self.R = (1-self.n)*(self.q_12/(self.T_2-self.T_1-self.c_v))
+            self.R = (1-self.n)*(self.q_12/(self.T_2-self.T_1)-self.c_v)
             return self.R
 
         elif self.n == None:
@@ -1003,12 +1010,12 @@ class Polytropic():
     def entropy_temp(self):
         if self.s_2 == None:
             self.s_2 = self.s_1 + \
-                (self.c_v + self.R(1-self.n))*np.log(self.T_2/self.T_1)
+                (self.c_v + self.R/(1-self.n))*np.log(self.T_2/self.T_1)
             return self.s_2
 
         elif self.s_1 == None:
             self.s_1 = self.s_2 - \
-                (self.c_v + self.R(1-self.n))*np.log(self.T_2/self.T_1)
+                (self.c_v + self.R/(1-self.n))*np.log(self.T_2/self.T_1)
             return self.s_1
 
         elif self.c_v == None:
@@ -1085,15 +1092,15 @@ class Polytropic():
                 Polytropic.work_temp_R(self)
                 called = 1
 
-            checkf = [self.w_12, self.P_1, self.P_2,
-                      self.v_2, self.v_1, self.T_2, self.T_1]
-            null = 0
-            for a in checkf:
-                if a == None:
-                    null += 1
-            if null == 1:
-                Polytropic.pres_vol_temp(self)
-                called = 1
+            # checkf = [self.w_12, self.P_1, self.P_2,
+            #           self.v_2, self.v_1, self.T_2, self.T_1]
+            # null = 0
+            # for a in checkf:
+            #     if a == None:
+            #         null += 1
+            # if null == 1:
+            #     Polytropic.pres_vol_temp(self)
+            #     called = 1
 
             checkg = [self.q_12, self.R, self.n, self.T_1, self.T_2, self.c_v]
             null = 0
@@ -1136,11 +1143,11 @@ class Polytropic():
 
 
 class Flow_Processes():
-    def __init__(self, q_12, w_12, h_2, h_1, C_1, C_2, z_1, z_2):
+    def __init__(self, q_12, w_12, h_1, h_2, C_1, C_2, z_1, z_2):
         self.q_12 = q_12
         self.w_12 = w_12
-        self.h_2 = h_2
         self.h_1 = h_1
+        self.h_2 = h_2
         self.C_1 = C_1
         self.C_2 = C_2
         self.z_1 = z_1
@@ -1149,44 +1156,46 @@ class Flow_Processes():
     def all_variables(self):
         if self.q_12 == None:
             self.q_12 = self.w_12 + self.h_2 - self.h_1 + 0.5 * \
-                (self.C_2 ** 2 + self.C_1 ** 2) + 9.81*(self.z_2 - self.z_1)
+                (self.C_2 ** 2 - self.C_1 ** 2) + 9.81*(self.z_2 - self.z_1)
             return self.q_12
 
         elif self.w_12 == None:
             self.w_12 = self.q_12 - \
-                (self.h_2 - self.h_1 + 0.5*(self.C_2 ** 2 +
-                                            self.C_1 ** 2) + 9.81*(self.z_2 - self.z_1))
+                (self.h_2 - self.h_1 + 0.5*(self.C_2 ** 2 -
+                self.C_1 ** 2) + 9.81*(self.z_2 - self.z_1))
             return self.q_12
 
         elif self.h_2 == None:
             self.h_2 = self.q_12 - self.w_12 + self.h_1 - 0.5 * \
-                (self.C_2 ** 2 + self.C_1 ** 2) - 9.81*(self.z_2 - self.z_1)
+                (self.C_2 ** 2 - self.C_1 ** 2) - 9.81*(self.z_2 - self.z_1)
             return self.h_2
 
         elif self.h_1 == None:
             self.h_1 = - self.q_12 + self.w_12 + self.h_2 + 0.5 * \
-                (self.C_2 ** 2 + self.C_1 ** 2) + 9.81*(self.z_2 - self.z_1)
+                (self.C_2 ** 2 - self.C_1 ** 2) + 9.81*(self.z_2 - self.z_1)
             return self.h_1
 
         elif self.C_2 == None:
             self.C_2 = np.sqrt(
-                (2*(self.q_12 - self.w_12 - 9.81*(self.z_2 - self.z_1)) + self.C_1 ** 2))
+                (2*(self.q_12 - self.w_12 -\
+                    (self.h_2 - self.h_1) - 9.81*(self.z_2 - self.z_1)) + self.C_1 ** 2))
             return self.C_2
 
         elif self.C_1 == None:
-            self.C_1 = np.sqrt(
-                (2*(- self.q_12 + self.w_12 + 9.81*(self.z_2 - self.z_1)) + self.C_2 ** 2))
+            self.C_1 = np.sqrt( \
+                (2*(- self.q_12 + self.w_12 +\
+                    self.h_2 - self.h_1 + 9.81*(self.z_2 - self.z_1)) + self.C_2 ** 2))
             return self.C_1
 
         elif self.z_2 == None:
-            self.z_2 = (self.q_12 - self.w_12 - 0.5 *
-                        (self.C_2 ** 2 + self.C_1 ** 2))/9.81 + self.z_1
+            self.z_2 = (self.q_12 - self.w_12 - (self.h_2 - self.h_1) - 0.5 *
+                        (self.C_2 ** 2 - self.C_1 ** 2))/9.81 + self.z_1
             return self.z_2
 
         elif self.z_1 == None:
-            self.z_2 = - (self.q_12 - self.w_12 - 0.5 *
-                          (self.C_2 ** 2 + self.C_1 ** 2))/9.81 + self.z_2
-            return self.z_2
+            self.z_1 = - (self.q_12 - self.w_12 - (self.h_2 - self.h_1) - 0.5 *
+                          (self.C_2 ** 2 - self.C_1 ** 2))/9.81 + self.z_2
+            return self.z_1
 
     def equation_finder(self):
         called = None
@@ -1201,8 +1210,8 @@ class Flow_Processes():
                 Flow_Processes.all_variables(self)
                 called = 1
 
-        handling = [self.q_12, self.w_12, self.h_2,
-                    self.h_1, self.C_1, self.C_2, self.z_1, self.z_2]
+        handling = [self.q_12, self.w_12, self.h_1,
+                    self.h_2, self.C_1, self.C_2, self.z_1, self.z_2]
         post = Post_Process(handling)
         handling = post.adjustment()
 
@@ -1213,7 +1222,7 @@ class Flow_Processes():
 
 
 class Boilers_Condensors_Heaters_Coolers():
-    def __init__(self, q_12, T_1, T_2, h_1, h_2, s_1, s_2, c_p):
+    def __init__(self, q_12, T_1, T_2, h_1, h_2, s_1, s_2, c_p,R):
         self.q_12 = q_12
         self.T_1 = T_1
         self.T_2 = T_2
@@ -1222,6 +1231,7 @@ class Boilers_Condensors_Heaters_Coolers():
         self.s_1 = s_1
         self.s_2 = s_2
         self.c_p = c_p
+        self.R = R
 
     def heat_transferred(self):
         if self.q_12 == None:
@@ -1236,7 +1246,48 @@ class Boilers_Condensors_Heaters_Coolers():
             self.h_1 = self.h_1 - self.q_12
             return self.h_1
 
-    def entropy(self):
+    def heat_transfer_CvR(self):
+        if self.q_12 == None:
+            self.q_12 = self.c_v*(self.T_2 - self.T_1) + \
+                self.R*(self.T_2 - self.T_1)
+            return self.q_12
+
+        elif self.c_v == None:
+            self.c_v = (self.q_12 - self.R*(self.T_2 - self.T_1)) / \
+                (self.T_2 - self.T_1)
+            return self.c_v
+
+        elif self.R == None:
+            self.R = (self.q_12 - self.c_v*(self.T_2 - self.T_1)) / \
+                (self.T_2 - self.T_1)
+            return self.R
+
+        elif self.T_1 == None:
+            self.T_1 = self.T_2 - self.q_12/(self.c_v+self.R)
+            return self.T_1
+
+        elif self.T_2 == None:
+            self.T_2 = self.T_1 + self.q_12/(self.c_v+self.R)
+            return self.T_2
+
+    def heat_transfer_Cp(self):
+        if self.q_12 == None:
+            self.q_12 = self.c_p*(self.T_2 - self.T_1)
+            return self.q_12
+
+        elif self.c_p == None:
+            self.c_p = self.q_12/(self.T_2 - self.T_1)
+            return self.c_p
+
+        elif self.T_1 == None:
+            self.T_1 = self.T_2 - self.q_12/(self.c_p)
+            return self.T_1
+
+        elif self.T_2 == None:
+            self.T_2 = self.T_1 + self.q_12/(self.c_p)
+            return self.T_2    
+
+    def entropy_change(self):
         if self.s_1 == None:
             self.s_1 = self.s_2 - self.c_p*np.log(self.T_2/self.T_1)
             return self.s_1
@@ -1259,23 +1310,44 @@ class Boilers_Condensors_Heaters_Coolers():
 
     def equation_finder(self):
         called = None
-        for i in range(0, 2):
+        for i in range(0, 4):
             checka = [self.q_12, self.h_1, self.h_2]
             null = 0
             for a in checka:
                 if a == None:
                     null += 1
             if null == 1:
-                Boilers_Condensors_Heaters_Coolers.heat_transferred(self)
+                Boilers_Condensors_Heaters_Coolers.heat_transferred_h(self)
                 called = 1
 
-            checkb = [self.s_1, self.s_2, self.c_p, self.T_1, self.T_2]
-            null = 0
-            for a in checkb:
+            checkd = [self.q_12, self.c_v, self.R, self.T_1, self.T_2]
+            null_heat_CvR = 0
+            for a in checkd:
                 if a == None:
-                    null += 1
-            if null == 1:
-                Boilers_Condensors_Heaters_Coolers.entropy(self)
+                    null_heat_CvR += 1
+
+            if null_heat_CvR == 1:
+                Boilers_Condensors_Heaters_Coolers.heat_transfer_CvR(self)
+                called = 1
+
+            checke = [self.q_12, self.c_p, self.T_1, self.T_2]
+            null_heat_Cp = 0
+            for a in checke:
+                if a == None:
+                    null_heat_Cp += 1
+
+            if null_heat_Cp == 1:
+                Boilers_Condensors_Heaters_Coolers.heat_transfer_Cp(self)
+                called = 1
+
+            checkf = [self.s_1, self.s_2, self.c_p, self.T_2, self.T_1]
+            null_entropy = 0
+            for a in checkf:
+                if a == None:
+                    null_entropy += 1
+
+            if null_entropy == 1:
+                Boilers_Condensors_Heaters_Coolers.entropy_change(self)
                 called = 1
 
         handling = [self.q_12, self.T_1, self.T_2, self.h_1,
@@ -1310,15 +1382,15 @@ class Nozzles_Diffusers():
             return self.C_1
 
         elif self.C_2 == None:
-            self.C_2 = np.sqrt(self.C_2 ** 2 - 2*(self.h_2 - self.h_1))
+            self.C_2 = np.sqrt(self.C_1 ** 2 - 2*(self.h_2 - self.h_1))
             return self.C_2
 
         elif self.h_2 == None:
-            self.h_2 = self.h_1 - 0.5*(self.C_2 ** 2 + self.C_1 ** 2)
+            self.h_2 = self.h_1 - 0.5*(self.C_2 ** 2 - self.C_1 ** 2)
             return self.h_2
 
         elif self.h_1 == None:
-            self.h_1 = self.h_2 + 0.5*(self.C_2 ** 2 + self.C_1 ** 2)
+            self.h_1 = self.h_2 + 0.5*(self.C_2 ** 2 - self.C_1 ** 2)
             return self.h_1
 
     def enthalpy_temp(self):
@@ -1352,7 +1424,7 @@ class Nozzles_Diffusers():
             return self.h_1
 
         elif self.mu == None: 
-            self.mu = (self.h_2 - self.h_1)/(self.h_2i - self.h_2)
+            self.mu = (self.h_2 - self.h_1)/(self.h_2i - self.h_1)
             return self.mu
 
         elif self.h_2i == None:
@@ -1369,7 +1441,7 @@ class Nozzles_Diffusers():
             return self.T_1
 
         elif self.mu == None: 
-            self.mu = (self.T_2 - self.T_1)/(self.T_2i - self.T_2)
+            self.mu = (self.T_2 - self.T_1)/(self.T_2i - self.T_1)
             return self.mu
 
         elif self.T_2i == None:
@@ -1386,7 +1458,7 @@ class Nozzles_Diffusers():
             return self.s_1
 
         elif self.c_p == None:
-            self.c_p = (self.s_1 - self.s_2)/np.log(self.T_2/self.T_2i)
+            self.c_p = (self.s_2 - self.s_1)/np.log(self.T_2/self.T_2i)
             return self.c_p
 
         elif self.T_2 == None:
@@ -1401,7 +1473,7 @@ class Nozzles_Diffusers():
     def equation_finder(self):
         called = None
         for i in range(0, 5):
-            checka = [self.C_1, self.C_1, self.h_1, self.h_2]
+            checka = [self.C_1, self.C_2, self.h_1, self.h_2]
             null = 0
             for a in checka:
                 if a == None:
@@ -1446,7 +1518,8 @@ class Nozzles_Diffusers():
                 Nozzles_Diffusers.enthalpy(self)
                 called = 1
 
-            checke = [self.s_1, self.s_2, self.T_2i, self.mu, self.T_2]
+            checke = [self.s_1, self.s_2, self.T_2i, self.c_p, self.T_2]
+            null = 0
             for a in checke:
                 if a == None:
                     null += 1
@@ -1484,11 +1557,11 @@ class Turbine_Compressors():
             return self.w_12
 
         elif self.h_2 == None:
-            self.h_2 = self.h_1- self.w_12
+            self.h_2 = self.h_1 - self.w_12
             return self.h_2
 
         elif self.h_1 == None:
-            self.h_1 = self.h_2 - + self.w_12
+            self.h_1 = self.h_2 - self.w_12
             return self.h_1
 
     def enthalpy_temp(self):
@@ -1522,7 +1595,7 @@ class Turbine_Compressors():
             return self.h_1
 
         elif self.mu == None: 
-            self.mu = (self.h_2 - self.h_1)/(self.h_2i - self.h_2)
+            self.mu = (self.h_2 - self.h_1)/(self.h_2i - self.h_1)
             return self.mu
 
         elif self.h_2i == None:
@@ -1539,7 +1612,7 @@ class Turbine_Compressors():
             return self.T_1
 
         elif self.mu == None: 
-            self.mu = (self.T_2 - self.T_1)/(self.T_2i - self.T_2)
+            self.mu = (self.T_2 - self.T_1)/(self.T_2i - self.T_1)
             return self.mu
 
         elif self.T_2i == None:
@@ -1556,7 +1629,7 @@ class Turbine_Compressors():
             return self.s_1
 
         elif self.c_p == None:
-            self.c_p = (self.s_1 - self.s_2)/np.log(self.T_2/self.T_2i)
+            self.c_p = (self.s_2 - self.s_1)/np.log(self.T_2/self.T_2i)
             return self.c_p
 
         elif self.T_2 == None:
@@ -1566,10 +1639,12 @@ class Turbine_Compressors():
         elif self.T_2i == None:
             self.T_2i = self.T_2/np.exp((self.s_2 - self.s_1)/self.c_p)
 
+
+
     def equation_finder(self):  
         called = None
         for i in range(0, 6):
-            checkb = [self.h_1, self.h_2, self.mu, self.h_2i]
+            checkb = [self.h_1, self.h_2, self.w_12]
             null = 0
             for a in checkb:
                 if a == None:
@@ -1587,7 +1662,7 @@ class Turbine_Compressors():
                 Turbine_Compressors.enthalpy_temp(self)
                 called = 1
 
-            checkd = [self.T_1, self.T_2, self.T_2i, self.mu]
+            checkd = [self.h_1, self.h_2, self.h_2i, self.mu]
             null = 0
             for a in checkd:
                 if a == None:
@@ -1726,44 +1801,46 @@ class Throttles():
 
 # #Constant Temperature Testing
 # # T, v_1, v_2, P_1, P_2, q_12, w_12, c_v, c_p, R, s_1, s_2
-if __name__ == "__main__":
-    inputs = 12
-    eqn_values = 4
-    for a in range(0,eqn_values):
-        values = [4,2,2,1]
-        #T, v_1, v_2, P_1, P_2, q_12, w_12, c_v, c_p, R, s_1, s_2
-        positions = [1,0,3,2]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
+# if __name__ == "__main__":
+#     inputs = 12
+#     eqn_values = 5
+#     for a in range(0,eqn_values):
+#         values = [41.58883083,5,6,8,2]
+#         #T, v_1, v_2, P_1, P_2, q_12, w_12, c_v, c_p, R, s_1, s_2
+#         positions = [5,0,9,2,1]
+#         values.pop(a)
+#         positions.pop(a)
+#         print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
 
-            else:
-                variables.append(None)
+#             else:
+#                 variables.append(None)
 
-        #print(variables)
+#         #print(variables)
 
 
-        test = Constant_Temperature(variables[0],variables[1],variables[2],
-            variables[3],variables[4],variables[5],variables[6],variables[7],
-            variables[8],variables[9],variables[10],variables[11])
-        print(test.equation_finder()[0])
+#         test = Constant_Temperature(variables[0],variables[1],variables[2],
+#             variables[3],variables[4],variables[5],variables[6],variables[7],
+#             variables[8],variables[9],variables[10],variables[11])
+#         print(test.equation_finder()[0])
 
 # #Adiabatic Testing
 # #T_1, T_2, v_1, v_2, P_1, P_2, w_12, c_v, c_p, R, s_1, s_2, u_1, u_2, gamma
+
 # if __name__ == "__main__":
 #     inputs = 15
 #     eqn_values = 4
 #     for a in range(0,eqn_values):
-#         values = [4,2,2,1]
-#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-#         positions = [1,0,3,2]
+#         values = [-24,4,8,2]
+#         #T_1, T_2, v_1, v_2, P_1, P_2, w_12, c_v, c_p, R, s_1, s_2, u_1, u_2, gamma
+#         # 0 ,  1 ,  2 ,  3 ,  4 ,  5 ,  6  ,  7 ,  8 , 9, 10 , 11 , 12 , 13 ,  14
+#         positions = [6,7,1,0]
 #         values.pop(a)
 #         positions.pop(a)
 #         print(str(values))
@@ -1783,7 +1860,7 @@ if __name__ == "__main__":
 
 #         test = Adiabatic(variables[0],variables[1],variables[2],
 #             variables[3],variables[4],variables[5],variables[6],variables[7],
-#             variables[8],variables[9],variables[10],variables[11],variables[12]
+#             variables[8],variables[9],variables[10],variables[11],variables[12],
 #             variables[13],variables[14])
 #         print(test.equation_finder()[0])
 
@@ -1791,11 +1868,12 @@ if __name__ == "__main__":
 # #P_1, P_2, v_1, v_2, T_1, T_2, s_1, s_2, w_12, q_12, c_v, R, n
 # if __name__ == "__main__":
 #     inputs = 13
-#     eqn_values = 4
+#     eqn_values = 7
 #     for a in range(0,eqn_values):
-#         values = [4,2,2,1]
-#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-#         positions = [1,0,3,2]
+#         values = [1,0.5288678574,5,6,7,8,9]
+#         #P_1, P_2, v_1, v_2, T_1, T_2, s_1, s_2, w_12, q_12, c_v, R, n
+#         # 0 ,  1 ,  2 ,  3 ,  4 ,  5 ,  6 ,  7 ,  8  ,  9  , 10 ,11, 12
+#         positions = [7,6,10,11,12,4,5]
 #         values.pop(a)
 #         positions.pop(a)
 #         print(str(values))
@@ -1822,11 +1900,11 @@ if __name__ == "__main__":
 # #q_12, w_12, h_2, h_1, C_1, C_2, z_1, z_2
 # if __name__ == "__main__":
 #     inputs = 8
-#     eqn_values = 4
+#     eqn_values = 8
 #     for a in range(0,eqn_values):
-#         values = [4,2,2,1]
-#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-#         positions = [1,0,3,2]
+#         values = [15,0.69,1,2,3,4,5,6]
+#         #q_12, w_12, h_1, h_2, C_1, C_2, z_1, z_2
+#         positions = [0,1,2,3,4,5,6,7]
 #         values.pop(a)
 #         positions.pop(a)
 #         print(str(values))
@@ -1880,34 +1958,35 @@ if __name__ == "__main__":
 
 # #Nozzles Diffusers Testing
 # #C_1, C_2, h_1, h_2, h_2i, T_1, T_2, T_2i, s_1, s_2, c_p, mu
-# if __name__ == "__main__":
-#     inputs = 12
-#     eqn_values = 4
-#     for a in range(0,eqn_values):
-#         values = [4,2,2,1]
-#         #T_1, T_2, P_1, P_2, q_12, c_v, s_1, s_2
-#         positions = [1,0,3,2]
-#         values.pop(a)
-#         positions.pop(a)
-#         print(str(values))
-#         counter = 0
-#         variables = [None] * inputs
-#         for i in range(0,inputs):
-#             if i in positions:
-#                 variables[positions[counter]] = values[counter]
-#                 #print(variables[positions[counter]])
-#                 counter += 1
+if __name__ == "__main__":
+    inputs = 12
+    eqn_values = 5
+    for a in range(0,eqn_values):
+        values = [3,4,5,1,0.33056934605]
+        #C_1, C_2, h_1, h_2, h_2i, T_1, T_2, T_2i, s_1, s_2, c_p, mu
+        # 0 ,  1 ,  2 ,  3 ,  4  ,  5 ,  6 ,  7  ,  8 ,  9 , 10 , 11
+        positions = [10,7,6,9,8]
+        values.pop(a)
+        positions.pop(a)
+        print(str(values))
+        counter = 0
+        variables = [None] * inputs
+        for i in range(0,inputs):
+            if i in positions:
+                variables[positions[counter]] = values[counter]
+                #print(variables[positions[counter]])
+                counter += 1
 
-#             else:
-#                 variables.append(None)
+            else:
+                variables.append(None)
 
-#         #print(variables)
+        #print(variables)
 
 
-#     test = Nozzles_Diffusers(variables[0],variables[1],variables[2],
-#             variables[3],variables[4],variables[5],variables[6],variables[7],
-#             variables[8],variables[9],variables[10],variables[11])
-#     print(test.equation_finder()[0])
+        test = Nozzles_Diffusers(variables[0],variables[1],variables[2],
+            variables[3],variables[4],variables[5],variables[6],variables[7],
+            variables[8],variables[9],variables[10],variables[11])
+        print(test.equation_finder()[0])
 
 # #Turbine Compressors Testing
 # #w_12,h_1,h_2,h_2i,T_1,T_2,T_2i,s_1,s_2,c_p
