@@ -1222,7 +1222,7 @@ class Flow_Processes():
 
 
 class Boilers_Condensors_Heaters_Coolers():
-    def __init__(self, q_12, T_1, T_2, h_1, h_2, s_1, s_2, c_p,R):
+    def __init__(self, q_12, T_1, T_2, h_1, h_2, s_1, s_2, c_v, c_p,R):
         self.q_12 = q_12
         self.T_1 = T_1
         self.T_2 = T_2
@@ -1231,9 +1231,10 @@ class Boilers_Condensors_Heaters_Coolers():
         self.s_1 = s_1
         self.s_2 = s_2
         self.c_p = c_p
+        self.c_v = c_v
         self.R = R
 
-    def heat_transferred(self):
+    def heat_transferred_h(self):
         if self.q_12 == None:
             self.q_12 = self.h_2 - self.h_1
             return self.q_12
