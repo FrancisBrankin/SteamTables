@@ -1959,35 +1959,35 @@ class Throttles():
 
 # #Nozzles Diffusers Testing
 # #C_1, C_2, h_1, h_2, h_2i, T_1, T_2, T_2i, s_1, s_2, c_p, mu
-if __name__ == "__main__":
-    inputs = 12
-    eqn_values = 5
-    for a in range(0,eqn_values):
-        values = [3,4,5,1,0.33056934605]
-        #C_1, C_2, h_1, h_2, h_2i, T_1, T_2, T_2i, s_1, s_2, c_p, mu
-        # 0 ,  1 ,  2 ,  3 ,  4  ,  5 ,  6 ,  7  ,  8 ,  9 , 10 , 11
-        positions = [10,7,6,9,8]
-        values.pop(a)
-        positions.pop(a)
-        print(str(values))
-        counter = 0
-        variables = [None] * inputs
-        for i in range(0,inputs):
-            if i in positions:
-                variables[positions[counter]] = values[counter]
-                #print(variables[positions[counter]])
-                counter += 1
+# if __name__ == "__main__":
+#     inputs = 12
+#     eqn_values = 5
+#     for a in range(0,eqn_values):
+#         values = [3,4,5,1,0.33056934605]
+#         #C_1, C_2, h_1, h_2, h_2i, T_1, T_2, T_2i, s_1, s_2, c_p, mu
+#         # 0 ,  1 ,  2 ,  3 ,  4  ,  5 ,  6 ,  7  ,  8 ,  9 , 10 , 11
+#         positions = [10,7,6,9,8]
+#         values.pop(a)
+#         positions.pop(a)
+#         print(str(values))
+#         counter = 0
+#         variables = [None] * inputs
+#         for i in range(0,inputs):
+#             if i in positions:
+#                 variables[positions[counter]] = values[counter]
+#                 #print(variables[positions[counter]])
+#                 counter += 1
 
-            else:
-                variables.append(None)
+#             else:
+#                 variables.append(None)
 
-        #print(variables)
+#         #print(variables)
 
 
-        test = Nozzles_Diffusers(variables[0],variables[1],variables[2],
-            variables[3],variables[4],variables[5],variables[6],variables[7],
-            variables[8],variables[9],variables[10],variables[11])
-        print(test.equation_finder()[0])
+#         test = Nozzles_Diffusers(variables[0],variables[1],variables[2],
+#             variables[3],variables[4],variables[5],variables[6],variables[7],
+#             variables[8],variables[9],variables[10],variables[11])
+#         print(test.equation_finder()[0])
 
 # #Turbine Compressors Testing
 # #w_12,h_1,h_2,h_2i,T_1,T_2,T_2i,s_1,s_2,c_p
